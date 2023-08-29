@@ -1,27 +1,40 @@
 import { useState } from "react";
-import { Image, TouchableOpacity } from "react-native";
+import { Image, TouchableOpacity, Vibration } from "react-native";
 import { TextInput } from "react-native";
 import { SafeAreaView, Text, View, StyleSheet } from "react-native";
 
 const LoginPage = () => {
 
-    const [login, setLogin] = useState(null)
+    const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
+    const [errorMessage, setErrorMessage] = useState(null)
 
+    const onCLickValidation = () => {
+        if (email != null && password != null) {
+            setEmail(null)
+            setPassword(null)
+            setErrorMessage(null)
+            return
+        }
+        Vibration.vibrate()
+        setErrorMessage("Campo Obrigatorio*")
+    }
 
     return (
         <SafeAreaView>
             <View style={styles.formContext}>
                 <View style={styles.form}>
                     <Text style={styles.formLabel}>Email:</Text>
+                    <Text style={styles.messageError}>{errorMessage}</Text>
                     <TextInput
                         style={styles.formInput}
-                        onChangeText={setLogin}
-                        value={login}
+                        onChangeText={setEmail}
+                        value={email}
                         placeholder="exemplo@exemplo.com"
                         keyboardType="Email Address"
                     />
                     <Text style={styles.formLabel}>Senha:</Text>
+                    <Text style={styles.messageError}>{errorMessage}</Text>
                     <TextInput
                         style={styles.formInput}
                         onChangeText={setPassword}
@@ -30,7 +43,7 @@ const LoginPage = () => {
                         keyboardType="password"
                         secureTextEntry={true}
                     />
-                    <TouchableOpacity style={styles.Button} >
+                    <TouchableOpacity style={styles.Button} onPress={() => {onCLickValidation()}}>
                         <Text style={styles.textButton} >Fazer Login</Text>
                     </TouchableOpacity>
                 </View>
@@ -84,9 +97,10 @@ const styles = StyleSheet.create({
         color: "#fff",
         textAlign: "center",    
     },
-    logo: {
-        width: 100,
-        height: 100
+    messageError: {
+        color: '#ff0000',
+        fontSize: 12,
+        marginLeft: 16
     }
 })
 
