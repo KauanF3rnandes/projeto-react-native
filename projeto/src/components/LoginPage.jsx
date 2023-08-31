@@ -7,17 +7,25 @@ const LoginPage = () => {
 
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
-    const [errorMessage, setErrorMessage] = useState(null)
+    const [errorMessageEmail, setErrorMessageEmail] = useState(null)
+    const [errorMessagePassword, setErrorMessagePassword] = useState(null)
 
     const onCLickValidation = () => {
-        if (email != null && password != null) {
+        if (email != null) {
             setEmail(null)
-            setPassword(null)
-            setErrorMessage(null)
-            return
+            setErrorMessageEmail(null)
+        } else {
+            Vibration.vibrate()
+            setErrorMessageEmail("Campo Obrigatorio*")
         }
-        Vibration.vibrate()
-        setErrorMessage("Campo Obrigatorio*")
+
+        if (password != null) {
+            setPassword(null)
+            setErrorMessagePassword(null)
+        } else {
+            Vibration.vibrate()
+            setErrorMessagePassword("Campo Obrigatorio*")
+        }
     }
 
     return (
@@ -25,7 +33,7 @@ const LoginPage = () => {
             <View style={styles.formContext}>
                 <View style={styles.form}>
                     <Text style={styles.formLabel}>Email:</Text>
-                    <Text style={styles.messageError}>{errorMessage}</Text>
+                    <Text style={styles.messageError}>{errorMessageEmail}</Text>
                     <TextInput
                         style={styles.formInput}
                         onChangeText={setEmail}
@@ -34,7 +42,7 @@ const LoginPage = () => {
                         keyboardType="Email Address"
                     />
                     <Text style={styles.formLabel}>Senha:</Text>
-                    <Text style={styles.messageError}>{errorMessage}</Text>
+                    <Text style={styles.messageError}>{errorMessagePassword}</Text>
                     <TextInput
                         style={styles.formInput}
                         onChangeText={setPassword}
@@ -47,6 +55,7 @@ const LoginPage = () => {
                         <Text style={styles.textButton} >Fazer Login</Text>
                     </TouchableOpacity>
                 </View>
+                <Image style={styles.imgCharizard} source={require('../img/charizard.gif')}/>
             </View>
         </SafeAreaView>
     );
@@ -101,6 +110,10 @@ const styles = StyleSheet.create({
         color: '#ff0000',
         fontSize: 12,
         marginLeft: 16
+    },
+    imgCharizard: {
+        width: '40%',
+        height: "20%"
     }
 })
 
