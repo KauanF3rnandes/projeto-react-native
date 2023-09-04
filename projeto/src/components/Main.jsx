@@ -1,14 +1,16 @@
-import { View } from "react-native";
-import LoginPage from "./LoginPage";
-import TitleLoginPage from "./TitleLoginPage";
+import { SafeAreaView, View } from "react-native";
+import LoginPage from "./LoginPages/LoginPage";
+import TitleLoginPage from "./LoginPages/TitleLoginPage";
+import HomePage from "./HomePages/HomePage";
 
 const Main = () => {
     return (
-        <View >
+        <SafeAreaView>
             <TitleLoginPage />
             <LoginPage/>
-        </View>
+        </SafeAreaView>
     );
 }
+
 
 export default Main;

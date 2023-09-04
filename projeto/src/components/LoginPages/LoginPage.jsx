@@ -55,7 +55,7 @@ const LoginPage = () => {
                         <Text style={styles.textButton} >Fazer Login</Text>
                     </TouchableOpacity>
                 </View>
-                <Image style={styles.imgCharizard} source={require('../img/charizard.gif')}/>
+                <Image style={styles.imgCharizard} source={require('../../img/charizard.gif')}/>
             </View>
         </SafeAreaView>
     );
@@ -67,14 +67,12 @@ const styles = StyleSheet.create({
         height: "100%",
         backgroundColor: "#FFF",
         alignItems: "center",
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30
     },
     form: {
         width: "100%",
         height: 'auto',
-        marginTop: 30,
         padding: 10,
+        marginTop: 20,
     },
     formLabel: {
         color: "#000",
@@ -112,8 +110,8 @@ const styles = StyleSheet.create({
         marginLeft: 16
     },
     imgCharizard: {
-        width: '40%',
-        height: "20%"
+        width: '45%',
+        height: "15%"
     }
 })
 

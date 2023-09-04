@@ -5,16 +5,10 @@ import Main from './src/components/Main';
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <View>
       <Main />
       <StatusBar/>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#FF0000',
-  },
-});
