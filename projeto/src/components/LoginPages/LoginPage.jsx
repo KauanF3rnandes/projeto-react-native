@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Image, TouchableOpacity, Vibration } from "react-native";
 import { TextInput } from "react-native";
 import { SafeAreaView, Text, View, StyleSheet } from "react-native";
+import TitleLoginPage from './TitleLoginPage'
 
-const LoginPage = () => {
+const LoginPage = ({navigation}) => {
 
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
@@ -26,10 +27,15 @@ const LoginPage = () => {
             Vibration.vibrate()
             setErrorMessagePassword("Campo Obrigatorio*")
         }
+
+        if (password != null && email != null) {
+            navigation.navigate('Home')
+        }
     }
 
     return (
         <SafeAreaView>
+            <TitleLoginPage/>
             <View style={styles.formContext}>
                 <View style={styles.form}>
                     <Text style={styles.formLabel}>Email:</Text>
@@ -72,7 +78,7 @@ const styles = StyleSheet.create({
         width: "100%",
         height: 'auto',
         padding: 10,
-        marginTop: 20,
+        marginTop: 40,
     },
     formLabel: {
         color: "#000",
