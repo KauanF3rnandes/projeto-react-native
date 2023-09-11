@@ -19,8 +19,8 @@ const styles = StyleSheet.create({
         borderBottomRightRadius: 30
     },
     logo: {
-        width: "35%",
-        height: "20%",
+        width: "30%",
+        height: "21%",
     }
 })
 

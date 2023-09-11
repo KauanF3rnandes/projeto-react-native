@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { SafeAreaView, View, FlatList, ActivityIndicator , Text, Image, StyleSheet } from "react-native";
+import { SafeAreaView, View, FlatList, ActivityIndicator, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+
 
 const HomePage = () => {
     
@@ -61,9 +63,11 @@ const HomePage = () => {
             })
             .catch(() => alert('Erro ao carregar lista de Pokémon!'));
     }, []);
+
+    const navigation = useNavigation();
     
     return (
-        <SafeAreaView style={{width: '100%', height: '100%'}}>
+        <SafeAreaView style={{ flex: 1, marginTop: 20, marginBottom: 20 }}>
             <Text style={styles.title}>POKEDEX</Text>
             <View>
                 {
@@ -73,18 +77,25 @@ const HomePage = () => {
                             keyExtractor={({ id }) => id.toString()}
                             renderItem={({ item }) => (
                                 <SafeAreaView style={styles.container}>
-                                    <View style={{
-                                        backgroundColor: getBackgroundColor(item.types), padding: 16,
-                                        marginTop: 20, alignItems: "center", marginBottom: 20,
-                                        height: 120, width: '90%', borderRadius: 10, flexDirection: 'row'
-                                    }}>
-                                        <Image source={{ uri: item.sprites.front_default }} style={styles.imgPokemons} />
+                                    <TouchableOpacity
+                                        style={{width: '90%'}}
+                                        onPress={() => {
+                                            navigation.navigate('PokemonDetail', { pokemon: item });
+                                        }}
+                                        >
+                                        <View style={{
+                                            backgroundColor: getBackgroundColor(item.types), padding: 16,
+                                            marginTop: 20, alignItems: "center", marginBottom: 20,
+                                            height: 120, width: '100%', borderRadius: 10, flexDirection: 'row'
+                                        }}>
+                                            <Image source={{ uri: item.sprites.front_default }} style={styles.imgPokemons} />
 
-                                        <View style={styles.BoxPokemonName}> 
-                                            <Text style={styles.pokemonName}>{item.name}</Text>
-                                            <Text style={styles.pokemonType}>{item.types.join(", ")}</Text>
+                                            <View style={styles.BoxPokemonName}> 
+                                                <Text style={styles.pokemonName}>{item.name}</Text>
+                                                <Text style={styles.pokemonType}>{item.types.join(", ")}</Text>
+                                            </View>
                                         </View>
-                                    </View>
+                                    </TouchableOpacity>
                                 </SafeAreaView>
                             )}
                         />
