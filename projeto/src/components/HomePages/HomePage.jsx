@@ -1,14 +1,15 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { SafeAreaView, View, FlatList, ActivityIndicator, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 
-
 const HomePage = () => {
-    
-
-    const [loading, setLoading] = useState(true)
-    const [pokemonData, setPokemonData] = useState([])
+    const [loading, setLoading] = useState(true);
+    const [pokemonData, setPokemonData] = useState([]);
     const [pokemonDetails, setPokemonDetails] = useState([]);
+    const [offset, setOffset] = useState(0);
+    const [limit, setLimit] = useState(20);
+    const [totalPokemons, setTotalPokemons] = useState(0);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
 
     const typeColors = {
         normal: "#A8A878",
@@ -29,79 +30,99 @@ const HomePage = () => {
         steel: "#B8B8D0",
         dragon: "#7038F8",
         fairy: "#EE99AC",
-      };
+    };
 
-      const getBackgroundColor = (types) => {
+    const getBackgroundColor = (types) => {
         if (types.length > 0) {
-          const mainType = types[0]; 
-          return typeColors[mainType] || "#FFFFFF"; 
+            const mainType = types[0];
+            return typeColors[mainType] || "#FFFFFF";
         }
-        return "#FFFFFF"; 
-      };
-      
+        return "#FFFFFF";
+    };
 
-    useEffect(() => {
-        fetch('https://pokeapi.co/api/v2/pokemon/')
+    const fetchPokemonData = useCallback(() => {
+        if (isLoadingMore) return;
+        if (pokemonDetails.length >= 50) return;
+
+        setIsLoadingMore(true);
+
+        const remainingPokemons = 50 - pokemonDetails.length;
+        const newLimit = Math.min(remainingPokemons, limit);
+
+        fetch(`https://pokeapi.co/api/v2/pokemon/?offset=${offset}&limit=${newLimit}`)
             .then((resp) => resp.json())
             .then((json) => {
+                setTotalPokemons(json.count);
+
                 const promises = json.results.map((result) => {
                     return fetch(result.url)
                         .then((resp) => resp.json());
                 });
-                
-                    Promise.all(promises)
-                        .then((pokemonData) => {
-                            pokemonData.forEach((pokemon) => {
+
+                Promise.all(promises)
+                    .then((pokemonData) => {
+                        pokemonData.forEach((pokemon) => {
                             const types = pokemon.types.map((type) => type.type.name);
                             pokemon.types = types;
-                    });
+                        });
 
-                    setPokemonDetails(pokemonData);
-                    setLoading(false);
-                })
+                        setPokemonDetails((prevDetails) => [...prevDetails, ...pokemonData]);
+                        setLoading(false);
+                        setOffset(offset + newLimit);
+                        setIsLoadingMore(false);
+                    })
                     .catch(() => alert('Erro ao carregar detalhes dos Pokémon!'));
             })
             .catch(() => alert('Erro ao carregar lista de Pokémon!'));
-    }, []);
+    }, [offset, limit, isLoadingMore, pokemonDetails]);
+
+    useEffect(() => {
+        fetchPokemonData();
+    }, [fetchPokemonData]);
 
     const navigation = useNavigation();
-    
+
     return (
         <SafeAreaView style={{ flex: 1, marginTop: 20, marginBottom: 20 }}>
             <Text style={styles.title}>POKEDEX</Text>
             <View>
-                {
-                    loading ? <ActivityIndicator /> : (
-                        <FlatList
-                            data={pokemonDetails}
-                            keyExtractor={({ id }) => id.toString()}
-                            renderItem={({ item }) => (
-                                <SafeAreaView style={styles.container}>
-                                    <TouchableOpacity
-                                        style={{width: '90%'}}
-                                        onPress={() => {
-                                            navigation.navigate('PokemonDetail', { pokemon: item });
-                                        }}
-                                        >
-                                        <View style={{
-                                            backgroundColor: getBackgroundColor(item.types), padding: 16,
-                                            marginTop: 20, alignItems: "center", marginBottom: 20,
-                                            height: 120, width: '100%', borderRadius: 10, flexDirection: 'row'
-                                        }}>
-                                            <Image source={{ uri: item.sprites.front_default }} style={styles.imgPokemons} />
+                {loading ? (
+                    <ActivityIndicator />
+                ) : (
+                    <FlatList
+                        data={pokemonDetails}
+                        keyExtractor={({ id }) => id.toString()}
+                        renderItem={({ item }) => (
+                            <SafeAreaView style={styles.container}>
+                                <TouchableOpacity
+                                    style={{ width: '90%' }}
+                                    onPress={() => {
+                                        navigation.navigate('PokemonDetail', { pokemon: item });
+                                    }}
+                                >
+                                    <View style={{
+                                        backgroundColor: getBackgroundColor(item.types), padding: 16,
+                                        marginTop: 20, alignItems: "center", marginBottom: 20,
+                                        height: 120, width: '100%', borderRadius: 10, flexDirection: 'row'
+                                    }}>
+                                        <Image source={{ uri: item.sprites.front_default }} style={styles.imgPokemons} />
 
-                                            <View style={styles.BoxPokemonName}> 
-                                                <Text style={styles.pokemonName}>{item.name}</Text>
-                                                <Text style={styles.pokemonType}>{item.types.join(", ")}</Text>
-                                            </View>
+                                        <View style={styles.BoxPokemonName}>
+                                            <Text style={styles.pokemonName}>{item.name}</Text>
+                                            <Text style={styles.pokemonType}>{item.types.join(", ")}</Text>
                                         </View>
-                                    </TouchableOpacity>
-                                </SafeAreaView>
-                            )}
-                        />
-
-                    )
-                }
+                                    </View>
+                                </TouchableOpacity>
+                            </SafeAreaView>
+                        )}
+                        onEndReached={() => {
+                            if (pokemonDetails.length < totalPokemons && pokemonDetails.length < 100) {
+                                fetchPokemonData();
+                            }
+                        }}
+                        onEndReachedThreshold={0.1}
+                    />
+                )}
             </View>
         </SafeAreaView>
     );
@@ -148,7 +169,7 @@ const styles = StyleSheet.create({
         marginTop: 30,
         alignItems: "center",
         color: 'red',
-        marginLeft: 20, 
+        marginLeft: 20,
     }
 })
 

@@ -5,7 +5,6 @@ import LoginPage from "./src/components/LoginPages/LoginPage";
 import Routes from './src/components/routes';
 
 
-
 export default function App() {
   return (
     <NavigationContainer>

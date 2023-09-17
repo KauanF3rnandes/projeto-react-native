@@ -29,7 +29,7 @@ const LoginPage = ({navigation}) => {
         }
 
         if (password != null && email != null) {
-            navigation.navigate('Home')
+            navigation.navigate('Main')
         }
     }
 
